@@ -1,138 +1,112 @@
-# import Blackjack as bj
-deck = ['K', '9', 'A', '4', 'A', '5', '9', '6', 'J', '2', 'J', 'Q', 'J', 'J', '9', '4', '2', '7', 'A', '7', '8', '6', 'K', '7', 'Q', '5', '8', '8', '6', '4', '10', '10', '7', '5', 'K', 'Q', '3', '10', '3', '3', '2', '2', '4', '3', 'K', 'Q', '10', '6', '8', 'A', '9', '5']
-values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', '11']
-occurence = [4, 4, 4, 4, 4, 4, 4, 4, 16, 4]
-deck = values * 4
-Odds = [0] * 31
+# The card counting script
 
-print(deck)
-def singleCardTotal(card):
-    if card == 'J' or card == 'Q' or card == 'K' or card == '10':
-        return 10
-    elif card == 'A':
-        return 11
+# TODO:
+    # Make it so that Aces can be one or 11
+    # winChance needs to be replaced with AVERAGE PAYHOUT, which is used to decide if you should Split or Double down or Surrender
+    # GetDealerOdds needs to remove cards from the deck when it goes down the recursive bunny holes to be more accurate
+
+# lists of the odds that the player / dealer will get any given total. Indexed by value, ex: dealerOdds[17] represents the % chance the dealer will get a 17
+maxPossible = 33
+dealerOdds = [0] * maxPossible
+playerOdds = [0] * maxPossible
+
+# tells you what you should play
+def whatShouldIPlay(myTotal, dealerCard, deck):
+    print("\nDeck: " + str(deck))
+    # FIRST, generate the odds that the dealer gets any combo         between 17-BUST
+    dealerCardTotal = int(dealerCard)
+    dealerOdds[dealerCardTotal] = 100
+    getDealerOdds2(dealerCardTotal, deck)
+    # print("sum of odds: " + str(sum(dealerOdds)))
+    print("The dealerOdds are: " + str(dealerOdds))
+
+    # THEN, get the playerOdds. STATUS = Functioning
+    getOdds(myTotal, deck)
+    print("The playerOdds are: " + str(playerOdds))
+
+    # # calculate bust chances
+    # playerBust = bustChance(playerOdds)
+    # dealerBust = bustChance(dealerOdds)
+    # print("The player bust chance is: " + str(playerBust))
+    # print("The dealer bust chance is: " + str(dealerBust))
+
+    # calculate the chances that the player will win if they stand
+    currentWinChance = wtl(myTotal)
+    print("Win/Tie/Lose if you stand: " + str(currentWinChance))
+
+    # calculate the chances that the player will win if they draw a card
+    hitWinChance = 0.0
+    for card in deck:
+        newTotal = myTotal + card
+        hitWinChance += wtl(newTotal) / len(deck)
+    print("average win/tie/lose if you draw a card: " + str(hitWinChance))
+
+    # recommend a course of action based on the odds of winning/losing calculated above
+    if currentWinChance > hitWinChance:
+        print('Counter reccommends that you stand')
+        return 'S'
+    elif currentWinChance < hitWinChance:
+        print('Counter reccommends that you hit')
+        return 'H'
     else:
-        return int(card)
+        print('Counter is befuzzled')
 
-def whatShouldIPlay(myTotal, dealerCard):
-    dealerCardTotal = singleCardTotal(dealerCard)
+def whatShouldIBet():
+    return 2
 
-    # playerOdds = getOdds(myTotal, deck)
-    Odds[dealerCardTotal] = 100
+def insurance():
+    return 0
 
-    dealerOdds = getDealerOdds2(dealerCardTotal)
-    # playerBust = bustChance(playerOdds[0], playerOdds[1])
-    # dealerBust = bustChance(dealerOdds[0], dealerOdds[1])
-    # print('playerOdds: ' + str(playerOdds) + ', playerBust: ' + str(playerBust))
-    print('dealerOdds: ' + str(dealerOdds))
-
-
-    # print('lose chance: ' + str(loseChance(myTotal, dealerOdds)))
-
+# creates two arrays, saying ALL possilbe hand totals after you've been delt a card, and the ODDS of each one of those hand totals
 def getOdds(total, deck):
-    possible = []
-    odds = []
-    for card in values:
-        possible.append(total + int(card))
-        if card != '10':
-            odds.append((4 / 52) * 100)
-        else:
-            odds.append((16 / 52) * 100)
-
-    return (possible, odds)
-
-
+    # add every possible card to the current total, and generate the odds for each
+    for card in deck:
+        playerOdds[total + card] += 100 / len(deck)
 
 # pass in a single dealer
-def getDealerOdds2(dealerTotal):
-    branchScenario = []
-
+def getDealerOdds2(dealerTotal, deck):
+    branchScenario = [0] * maxPossible
+    redistribute = dealerOdds[dealerTotal]
+    dealerOdds[dealerTotal] = 0
+    # if the dealer isn't over 17
     if dealerTotal < 17:
-        for card in values:
-            branchScenario.append(dealerTotal + int(card))
+        # for every card
+        for card in deck:
+            newTotal = dealerTotal + int(card)
+            dealerOdds[newTotal] += redistribute / len(deck)
+            # print(dealerOdds)
+            if newTotal < 17:
+                getDealerOdds2(newTotal, deck)
 
-
-        print('Branch Scenario: ' + str(branchScenario))
-        # print('BRANCH1Odds: ' + str(Odds))
-
-        redistribute = Odds[dealerTotal]
-        Odds.pop(dealerTotal)
-        for num in branchScenario:
-            if num != dealerTotal + 10:
-                Odds[num] += redistribute / 13
-            else:
-                Odds[num] += (redistribute * 4) / 13
-
-            if num < 17:
-                getDealerOdds2(num)
-
-    print(sum(Odds))
-    return Odds
-
-def getDealerOdds(total, deck):
-    # generate initial possibilities and odds
-    print('inside')
-    possible = []
-    odds = []
-    for card in values:
-        possible.append(total + int(card))
-        if card != '10':
-            odds.append((4 / 52) * 100)
-        else:
-            odds.append((16 / 52) * 100)
-
-
-
-    print('possible: ' + str(possible))
-    print('odds: ' + str(odds))
-    # while dealerPossibility contains numbers under 17, redo every number under 17
-    # while possible[0] < 17:
-    # for every possible number (after hitting)
-    for x in range(0, len(possible)):
-        print(len(possible))
-        # if the number is under 17
-        if possible[0] < 17:
-            # generate new possibility and odds
-            newPossible = []
-            newOdds = []
-            # populate the new possiblity and odds with the chances for that individual total
-            for card in values:
-                newPossible.append(possible[0] + int(card))
-                if card != '10':
-                    newOdds.append((4 / 52) * 100)
-                else:
-                    newOdds.append((16 / 52) * 100)
-            # divy up the popped number, among the rest of the possibilities / odds
-            for x in range(0, len(possible)):
-                # possible[x] += newPossible[x] / 100
-                odds[x] += newOdds[x] / 100
-            # get rid of the thang we just divied up
-            # possible.pop(0)
-            odds.pop(0)
-
-        print('newPossible: ' + str(newPossible))
-        print('newOdds: ' + str(newOdds))
-        print('possible: ' + str(possible))
-        print('odds: ' + str(odds))
-
-    return (possible, odds)
-
-
-def bustChance(possible, odds):
+# calculate the chance of busting if the player takes another card
+# not currently being used
+def bustChance(odds):
     bust = 0
-    for x in range(0, len(possible)):
-        if possible[x] > 21:
-            bust += odds[x]
-
+    for x in range(22, len(odds)):
+        bust += odds[x]
     return bust
 
-def loseChance(myTotal, dealerOdds):
-    loseChance = 0
-    for x in range(0, len(dealerOdds[0])):
-        if dealerOdds[0][x] > myTotal:
-            loseChance += dealerOdds[1][x]
-    return loseChance
-# combined = getOdds(hand, deck)
-# print(combined)
-# print(bustChance(combined[0], combined[1]))
+# calculates the chance of winning / tying / losing
+def wtl(playerValue):
+    win = 0.0
+    tie = 0.0
+    lose = 0.0
 
+    if playerValue > 21:
+        lose = 100
+        return win - lose
+
+    for num in range(playerValue, maxPossible):
+        if num > 21:
+            win += dealerOdds[num]
+            # print("at iteration " + str(num) + ", " + str(dealerOdds[num]) + " is being added to win")
+        elif playerValue > num:
+            win += dealerOdds[num]
+            # print("at iteration " + str(num) + ", " + str(dealerOdds[num]) + " is being added to win")
+        elif playerValue < num:
+            lose += dealerOdds[num]
+            # print("at iteration " + str(num) + ", " + str(dealerOdds[num]) + " is being added to lose")
+        else:
+            tie += dealerOdds[num]
+            # print("at iteration " + str(num) + ", " + str(dealerOdds[num]) + " is being added to tie")
+    return win - lose
