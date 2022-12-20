@@ -1,5 +1,6 @@
 # Blackjack Game, V2
-
+# import sys
+# sys.setrecursionlimit(2000)
 import random
 import Counter as co
 
@@ -7,7 +8,7 @@ import Counter as co
 remainingCards = []
 gameOver = False
 
-values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
 # suits = ['♦', '♣', '♥', '♠']
 
 cards = []
@@ -49,15 +50,15 @@ def deal():
 def total(hand):
     total = 0
     for card in cards[hand]:
-        if card == 'J' or card == 'Q' or card == 'K' or card == '10':
-            total += 10
-        elif card == 'A':
-            total += 11
-        else:
+        # if card == 'J' or card == 'Q' or card == 'K' or card == '10':
+        #     total += 10
+        # elif card == 'A':
+        #     total += 11
+        # else:
             total += int(card)
 
     if total > 21:
-        for x in range(0, cards[hand].count('A')):
+        for x in range(0, cards[hand].count(11)):
             total -= 10
             if total <= 21:
                 break
@@ -67,7 +68,7 @@ def total(hand):
 
 
 def info(hand):
-    print('Your hand: ' + ', '.join(cards[hand]))
+    print('Your hand: ' + ''.join(str(cards[hand])))
     print('Dealers hand: ' + str(cards[-1][0]) + ', Hidden')
 
 
@@ -173,7 +174,7 @@ remainingCards += shuffle(deckNum)
 print(remainingCards) # DEBUG
 
 bankrolls = [get_int('What bankroll? ', bankrollMin, 1000000)] * playerNum
-
+print(bankrolls)
 
 while gameOver == False:
 # at the start of every round
@@ -198,7 +199,7 @@ while gameOver == False:
 
 
     # check for insurance
-    if cards[-1][0] == 'A':
+    if cards[-1][0] == 11:
         for x in range (0, len(playerList)-1):
             ins = get_bool(playerList[x] + ', would you like insurance (y/n)? ')
             if ins:
@@ -207,7 +208,7 @@ while gameOver == False:
 
         if total(-1) == 21:
             print('Dealer has Blackjack')
-            print('Dealers hand: ' + ', '.join(cards[-1]))
+            print('Dealers hand: ' + ''.join(str(cards[-1])))
             for x in range(0, len(playerList) - 1):
                 if insurance[x] != 0:
                     print(playerList[x] + ', you won your insurance bet of ' + str(insurance[x]))
@@ -221,9 +222,9 @@ while gameOver == False:
 
     # non insurable BJ
     elif cards[-1][0] == '10' or cards[-1][0] == 'J' or cards[-1][0] == 'Q' or cards[-1][0] == 'K':
-        if cards[-1][1] == 'A':
+        if cards[-1][1] == '11':
             print('Dealer has Blackjack!')
-            print('Dealers hand: ' + ', '.join(cards[-1]))
+            print('Dealers hand: ' + ''.join(str(cards[-1])))
             for x in range(0, len(playerList)-1):
                 if total(x) == 21:
                     print(playerList[x] + ', you push.')
@@ -250,8 +251,7 @@ while gameOver == False:
 
         # get the players move
         while total(turn) < 21:
-            co.whatShouldIPlay(total(turn), cards[-1][0])
-            print('Counter reccommends that you: ')
+            co.whatShouldIPlay(total(turn), cards[-1][0], remainingCards)
             choice = input('What would you like to do (H, S, D, Sur, Spl): ').upper()
             if choice == 'H':
                 giveCard(turn)
@@ -303,9 +303,9 @@ while gameOver == False:
     if total(-1) <= 16:
         while total(-1) <= 16:
             giveCard(-1)
-            print('Dealers hand: ' + ', '.join(cards[-1]))
+            print('Dealers hand: ' + ''.join(str(cards[-1])))
     else:
-        print('Dealers hand: ' + ', '.join(cards[-1]))
+        print('Dealers hand: ' + ''.join(str(cards[-1])))
 
     if total(-1) > 21:
         status[-1] = 'BUST'
@@ -342,6 +342,6 @@ while gameOver == False:
     gameOver = reset()
 
 # todo
-    # make the huge chunka code into a def
+    # make the huge chunka code(main) into a def
     # extra payout on BJ
     # test edge cases (?)
