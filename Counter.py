@@ -13,22 +13,16 @@ playerOdds = [0] * maxPossible
 # tells you what you should play
 def whatShouldIPlay(myTotal, dealerCard, deck):
     print("\nDeck: " + str(deck))
-    # FIRST, generate the odds that the dealer gets any combo         between 17-BUST
+    # FIRST, generate the odds that the dealer gets any combo between 17-BUST
     dealerCardTotal = int(dealerCard)
     dealerOdds[dealerCardTotal] = 100
-    getDealerOdds2(dealerCardTotal, deck)
+    getDealerOdds(dealerCardTotal, deck)
     # print("sum of odds: " + str(sum(dealerOdds)))
     print("The dealerOdds are: " + str(dealerOdds))
 
-    # THEN, get the playerOdds. STATUS = Functioning
+    # THEN, get the playerOdds.
     getOdds(myTotal, deck)
     print("The playerOdds are: " + str(playerOdds))
-
-    # # calculate bust chances
-    # playerBust = bustChance(playerOdds)
-    # dealerBust = bustChance(dealerOdds)
-    # print("The player bust chance is: " + str(playerBust))
-    # print("The dealer bust chance is: " + str(dealerBust))
 
     # calculate the chances that the player will win if they stand
     currentWinChance = wtl(myTotal)
@@ -51,7 +45,13 @@ def whatShouldIPlay(myTotal, dealerCard, deck):
     else:
         print('Counter is befuzzled')
 
-def whatShouldIBet():
+def whatShouldIBet(deck):
+    print("Determining what to bet")
+    getOdds(0, deck)
+    getDealerOdds(0, deck)
+    print("The playerOdds are: " + str(playerOdds))
+    print("The dealerOdds are: " + str(dealerOdds))
+
     return 2
 
 def insurance():
@@ -63,23 +63,35 @@ def getOdds(total, deck):
     for card in deck:
         playerOdds[total + card] += 100 / len(deck)
 
-# pass in a single dealer
-def getDealerOdds2(dealerTotal, deck):
-    branchScenario = [0] * maxPossible
+def getPlayerOdds(dealerTotal, deck):
+    #
+    for card in deck:
+        playerOdds[card] += 100 / len(deck)
+        deck.pop(0)
+        for card in deck:
+            newTotal = dealerTotal + int(card)
+            dealerOdds[newTotal] += redistribute / len(deck)
+            playerOdds[card] += 100 / len(deck)
+    print(playerOdds)
+
+
+#getPlayerOdds(15, [11, 11, 7, 10, 9, 10, 9, 7, 7, 5, 8, 5, 11, 9, 10, 10, 10, 11, 6, 4, 2, 4, 2, 10, 10, 3, 10, 3, 3, 10, 3, 9, 2, 10, 5, 8, 4, 7, 6, 10, 8, 10, 4, 8, 10, 6, 2, 6])
+
+# Determine the odds that the dealer reaches any given value
+def getDealerOdds(dealerTotal, deck):
     redistribute = dealerOdds[dealerTotal]
     dealerOdds[dealerTotal] = 0
     # if the dealer isn't over 17
     if dealerTotal < 17:
         # for every card
         for card in deck:
+            #deck.pop(0) # Test. Shit worked when I commented this out.
             newTotal = dealerTotal + int(card)
             dealerOdds[newTotal] += redistribute / len(deck)
-            # print(dealerOdds)
             if newTotal < 17:
-                getDealerOdds2(newTotal, deck)
+                getDealerOdds(newTotal, deck)
 
 # calculate the chance of busting if the player takes another card
-# not currently being used
 def bustChance(odds):
     bust = 0
     for x in range(22, len(odds)):
