@@ -1,8 +1,9 @@
 import random
 import Counter as Co
+import perfectStrategy as Perfect
 
 # variables
-auto = True
+auto = False
 autoNum = 30000
 
 values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
@@ -18,6 +19,11 @@ deckNum = 1
 DAS = True  # not implemented
 RSA = True  # not implemented
 earlySurrender = False  # not implemented
+
+data_file_name = 'blackjackstrategychartMOD.csv'
+
+# Create an instance of the StrategyChart class
+strategy_chart = Perfect.StrategyChart(data_file_name)
 
 
 # Returns n number of shuffled decks
@@ -276,6 +282,10 @@ def main(automated, auto_iterate):
             while total(cards, turn) < 21:
                 print(remaining_cards)
                 choice = Co.whatShouldIPlay(total(cards, turn), cards[-1][0], remaining_cards.copy())
+                player_action = strategy_chart.decideAction(cards[turn], cards[-1][0], total(cards, turn))
+                print(
+                    f"Player hand: {cards[turn]}, Dealer hand: {cards[-1][0]}, Player hand sum: {total(cards, turn)}, "
+                    f"Action: {player_action}")
                 if not automated:
                     choice = input('What would you like to do (H, S, D, Sur, Spl): ').upper()
                     print(f'deck: {remaining_cards}')

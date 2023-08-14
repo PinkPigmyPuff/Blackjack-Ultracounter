@@ -10,14 +10,14 @@ df = pd.read_csv(('blackjackstrategychartMOD.csv'), index_col=0)
 # Display the DataFrame
 print(df)
 
-dataFileName = 'blackjackstrategychartMOD.csv'
+data_file_name = 'blackjackstrategychartMOD.csv'
 
 
 class StrategyChart:
-    def __init__(self, dataFileName):
-        self.hardStrat = np.genfromtxt(dataFileName, delimiter=',', skip_header=1, usecols=range(1, 11), max_rows=17)
-        self.softStrat = np.genfromtxt(dataFileName, delimiter=',', skip_header=17, usecols=range(1, 11), max_rows=10)
-        self.pairStrat = np.genfromtxt(dataFileName, delimiter=',', skip_header=26, usecols=range(1, 11), max_rows=10)
+    def __init__(self, data_file_name):
+        self.hardStrat = np.genfromtxt(data_file_name, delimiter=',', skip_header=1, usecols=range(1, 11), max_rows=17)
+        self.softStrat = np.genfromtxt(data_file_name, delimiter=',', skip_header=17, usecols=range(1, 11), max_rows=10)
+        self.pairStrat = np.genfromtxt(data_file_name, delimiter=',', skip_header=26, usecols=range(1, 11), max_rows=10)
 
     def decideAction(self, playerHand, dealerHand, playerHandSum):
         if len(playerHand) == 2 and playerHand[0] == playerHand[1]:
@@ -38,7 +38,7 @@ class StrategyChart:
         return playerAction
 
 # Create an instance of the StrategyChart class
-strategy_chart = StrategyChart(dataFileName)
+strategy_chart = StrategyChart(data_file_name)
 
 # Test cases
 test_cases = [
