@@ -1,7 +1,8 @@
 import random
 import Counter as co
+import perfectStrategy as Perfect
 # variables
-auto = True
+auto = False
 autoNum = 30000
 
 values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
@@ -261,7 +262,9 @@ def main(automated, autoIterate):
             # get the players move
             while total(cards, turn) < 21:
                 print(remainingCards)
-                choice = co.whatShouldIPlay(total(cards, turn), cards[-1][0], remainingCards.copy())
+                choice = co.whatShouldIPlay(total(cards, turn), cards[-1][0], remainingCards.copy()) # Should the cards passed not be totaled
+                perfect_choice = Perfect.what_should_i_play(cards[turn], cards[-1][0])
+                print(perfect_choice)
                 if not automated:
                     choice = input('What would you like to do (H, S, D, Sur, Spl): ').upper()
                     print(f'deck: {remainingCards}')
