@@ -171,6 +171,10 @@ def main(automated, auto_iterate):
     player_list = []
     bankrolls = []
     repetitions = 0
+
+    expandAbbrevations = {
+        ""
+    }
     # before the game starts, set up (name and bankroll for each player), (set up deck)
     print('Welcome to Blackjack!')
 
@@ -282,7 +286,7 @@ def main(automated, auto_iterate):
             while total(cards, turn) < 21:
                 print(remaining_cards)
                 choice = Co.whatShouldIPlay(total(cards, turn), cards[-1][0], remaining_cards.copy())
-                player_action = strategy_chart.decideAction(cards[turn], cards[-1][0], total(cards, turn))
+                player_action = strategy_chart.decide_action(cards[turn], cards[-1][0], total(cards, turn))
                 print(
                     f"Player hand: {cards[turn]}, Dealer hand: {cards[-1][0]}, Player hand sum: {total(cards, turn)}, "
                     f"Action: {player_action}")
