@@ -1,9 +1,9 @@
 # The card counting script
 
 # TODO:
-    # Make it so that Aces can be one or 11
-    # winChance needs to be replaced with AVERAGE PAYHOUT, which is used to decide if you should Split or Double down or Surrender
-    # GetDealerOdds needs to remove cards from the deck when it goes down the recursive bunny holes to be more accurate
+# Make it so that Aces can be one or 11
+# winChance needs to be replaced with AVERAGE PAYHOUT, which is used to decide if you should Split or Double down or Surrender
+# GetDealerOdds needs to remove cards from the deck when it goes down the recursive bunny holes to be more accurate
 
 # lists of the odds that the player / dealer will get any given total. Indexed by value, ex: dealerOdds[17] represents the % chance the dealer will get a 17
 maxPossible = 33
@@ -12,7 +12,8 @@ playerOdds = [0] * maxPossible
 
 # tells you what you should play
 def whatShouldIPlay(myTotal, dealerCard, deck):
-    print("\nDeck: " + str(deck))
+    print("\n####   ULTRACOUNTER    ####")
+    print("Deck: " + str(deck))
     # FIRST, generate the odds that the dealer gets any combo between 17-BUST
     dealerCardTotal = int(dealerCard)
     dealerOdds[dealerCardTotal] = 100

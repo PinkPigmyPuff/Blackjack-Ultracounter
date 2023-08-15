@@ -10,6 +10,7 @@ class StrategyChart:
         self.pairStrat = np.genfromtxt(data, delimiter=',', skip_header=26, usecols=range(1, 11), max_rows=10)
 
     def decide_action(self, player_hand, dealer_hand, player_hand_sum):
+        print("\n####   PERFECT STRATEGY    ####")
         if len(player_hand) == 2 and player_hand[0] == player_hand[1]:
             player_action = self.pairStrat[int(player_hand[0]) - 1, dealer_hand - 1]
         elif min(player_hand) == 1 and player_hand_sum == 12:
@@ -25,6 +26,12 @@ class StrategyChart:
                 player_action = self.softStrat[sum_other_cards - 1, dealer_hand - 1]
         else:
             player_action = self.hardStrat[player_hand_sum - 5, dealer_hand - 1]
+
+        print(
+            f"Player hand: {player_hand}, Dealer hand: {dealer_hand}, Player hand sum: {player_hand_sum}, "
+            f"Action: {player_action}")
+        print(f"Perfect strategy recommends that you {strategy_dict[player_action]}\n")
+
         return return_dict[player_action]
 
 
@@ -47,6 +54,14 @@ return_dict = {
     5: "D"
 }
 
+
+def test(test_data):
+    # Test the decideAction function
+    for a, b, c in test_cases:
+        action = strategy_chart.decide_action(a, b, c)
+        print(f"Player hand: {a}, Dealer hand: {b}, Player hand sum: {c}, Action: {action}")
+
+
 # Test cases
 test_cases = [
     ([5, 5], 6, 10),    # Pair
@@ -54,19 +69,7 @@ test_cases = [
     ([1, 2, 8], 7, 21), # Soft hand with multiple aces
     ([6, 5], 10, 11),   # Hard hand
 ]
-#
-# Test the decideAction function
-for a, b, c in test_cases:
-    action = strategy_chart.decide_action(a, b, c)
-    print(f"Player hand: {a}, Dealer hand: {b}, Player hand sum: {c}, Action: {action}")
 
 
-#def what_should_i_play(myTotal, dealerCard):
-def what_should_i_play(my_cards, dealer_card):
-    print(my_cards)
-    print(dealer_card)
-    # try:
-    #     value = df.iloc[row, column]
-    #     return value
-    # except IndexError:
-    #     return "Invalid row or column index"
+
+
