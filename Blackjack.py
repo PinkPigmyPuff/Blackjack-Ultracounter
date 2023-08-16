@@ -1,10 +1,10 @@
 import random
-import ultracounter as co
+import ultracounter as ultra
 import perfect_strategy as perfect
 
 # variables
-auto = False
-autoNum = 100
+auto = "perfect"
+autoNum = 1000000
 
 values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
 
@@ -21,14 +21,30 @@ maxPlayers = 10
 deckNum = 8
 DAS = True  # not implemented
 RSA = True  # not implemented
-earlySurrender = False  # not implemented
+lateSurrender = False  # not implemented
 
-data_file_name = 'blackjackstrategychartMOD.csv'
+strategy_dict = {
+    0: "Don't split",
+    1: "Split",
+    2: "Split if DAS is offered, otherwise don't",
+    3: "Hit",
+    4: "Stand",
+    5: "Double if possible, otherwise hit",
+    6: "Double if possible, otherwise stand",
+    7: "Surrender late if offered"
+}
 
-# Create an instance of the StrategyChart class
-strategy_chart = perfect.StrategyChart(data_file_name)
-
-
+# Only for temporary usage, until DAS / Late sur implemented
+return_dict = {
+    0: "Well, this wasn't supposed to happen",
+    1: "SPL",
+    2: "SPL",
+    3: "H",
+    4: "S",
+    5: "D",
+    6: "D",
+    7: "SUR"
+}
 # Returns n number of shuffled decks
 def shuffle(n):
     deck = []
@@ -214,7 +230,7 @@ def main(automated, auto_iterate):
                 bet = standardBet
                 bets.append(bet)
             elif automated == "ultra":
-                bet = co.whatShouldIBet(remaining_cards)
+                bet = ultra.whatShouldIBet(remaining_cards)
                 print('You bet: ' + str(bet))
                 bets.append(bet)
             else:
@@ -231,7 +247,7 @@ def main(automated, auto_iterate):
                     insurance[x] = False
                     bankrolls[x] -= insurance[x]
                 if automated:
-                    insurance[x] = co.insurance()
+                    insurance[x] = ultra.insurance()
                     bankrolls[x] -= insurance[x]
 
                 else:
@@ -293,10 +309,10 @@ def main(automated, auto_iterate):
                 choice = None
                 print(f"FED {cards[turn], cards[-1][0], total(cards, turn)}")
                 if automated == "perfect":
-                    choice = strategy_chart.decide_action(cards[turn], cards[-1][0], total(cards, turn))
+                    choice = return_dict[int(perfect.decide_action(cards[turn], cards[-1][0], total(cards, turn), lateSurrender, DAS))]
 
                 elif automated == "ultra":
-                    choice = co.whatShouldIPlay(total(cards, turn), cards[-1][0], remaining_cards.copy())
+                    choice = ultra.whatShouldIPlay(total(cards, turn), cards[-1][0], remaining_cards.copy())
 
                 if not automated:
                     choice = input('What would you like to do (H, S, D, Sur, Spl): ').upper()
@@ -335,6 +351,9 @@ def main(automated, auto_iterate):
                     status[turn] = 'SUR'
                     info(cards, turn)
                     break
+
+                else:
+                    print("Invalid response")
 
             # check if player busted
             if total(cards, turn) > 21:
