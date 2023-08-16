@@ -22,8 +22,6 @@ def decide_action(player_hand, dealer_hand, player_hand_sum, late_surrender, DAS
         return 7
     elif len(player_hand) == 2 and player_hand[0] == player_hand[1]:
         player_action = pair_strat[player_hand[0] - 1, dealer_hand]
-        print(player_action)
-        print(type(player_action))
         if player_action == '1' or (player_action == '2' and DAS):
             return player_action
     if np.max(player_hand) == 11:
