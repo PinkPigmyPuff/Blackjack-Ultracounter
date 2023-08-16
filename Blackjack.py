@@ -3,7 +3,7 @@ import ultracounter as co
 import perfect_strategy as perfect
 
 # variables
-auto = "ultra"
+auto = False
 autoNum = 100
 
 values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
@@ -197,7 +197,7 @@ def main(automated, auto_iterate):
     print(f'Remaining cards: {remaining_cards}')
 
     if automated == "perfect":
-        bankrolls = standardBankroll
+        bankrolls = [standardBankroll] * player_num
     else:
         bankrolls = [get_int('What bankroll? ', minBankroll, 1000000)] * player_num
 
@@ -227,11 +227,13 @@ def main(automated, auto_iterate):
         # check for insurance
         if cards[-1][0] == 11:
             for x in range(0, len(player_list) - 1):
-                ins = False
                 if automated == "perfect":
                     insurance[x] = False
+                    bankrolls[x] -= insurance[x]
                 if automated:
                     insurance[x] = co.insurance()
+                    bankrolls[x] -= insurance[x]
+
                 else:
                     ins = get_bool(player_list[x] + ', would you like insurance (y/n)? ')
                     if ins:
@@ -289,7 +291,7 @@ def main(automated, auto_iterate):
             # get the players move
             while total(cards, turn) < 21:
                 choice = None
-
+                print(f"FED {cards[turn], cards[-1][0], total(cards, turn)}")
                 if automated == "perfect":
                     choice = strategy_chart.decide_action(cards[turn], cards[-1][0], total(cards, turn))
 
