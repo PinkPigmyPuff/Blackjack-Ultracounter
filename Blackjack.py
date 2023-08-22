@@ -4,7 +4,7 @@ import perfect_strategy as perfect
 
 # variables
 auto = "perfect"
-autoNum = 1000000
+autoNum = 1000
 
 values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
 
@@ -151,11 +151,15 @@ def lose(players, turn, bankroll_modifier, money_bet, bankrolls):
 
 
 def reset(player_num, split, player_list, bankrolls, cards, discard, remaining_cards, cut_card):
+    split_hands = len(split)
+    print(player_list)
+    print(split_hands)
+    print(split)
     print('\nTotal bankroll:')
-    for x in range(player_num - 1):
+    for x in range(split_hands):
         if split[x]:
             player_list.pop(x)
-    for x in range(0, len(player_list) - 1):
+    for x in range(0, player_num):
         print(player_list[x] + ': ' + str(bankrolls[x]) + '$')
 
     # put all cards into the discard pile
@@ -172,6 +176,7 @@ def reset(player_num, split, player_list, bankrolls, cards, discard, remaining_c
         remaining_cards.extend(discard)
         discard.clear()
 
+    print(player_list)
     if not auto:
         if get_bool('End game (y/n)? '):
             print('See you next time!')
@@ -260,6 +265,10 @@ def main(automated, auto_iterate):
                 print('Dealer has Blackjack')
                 print('Dealers hand: ' + ''.join(str(cards[-1])))
                 for x in range(0, len(player_list) - 1):
+
+
+
+
                     if insurance[x] != 0:
                         print(player_list[x] + ', you won your insurance bet of ' + str(insurance[x]))
                         bankrolls[x] += insurance[x] * 2
@@ -381,6 +390,7 @@ def main(automated, auto_iterate):
         # determine who won
         for x in range(0, len(player_list) - 1):
             split_num = find_prev_splits(x, split)
+            #split_num = sum(split)
             # if dealer busted
             if status[-1] == 'BUST':
                 # and u didn't bust
